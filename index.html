@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IMDb Watchlist Analyzer - Visualize Your Movie and Content Watching Experience</title>
+    <meta name="description"
+        content="Analyze your IMDb watchlist data with this interactive dashboard. Upload your CSV export from IMDb to visualize insights on movies, TV series, and other types of content you've watched and rated. No data is sent anywhere; all analysis is done locally in your browser.">
+    <meta property="og:image" content="assets/social-image.png">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+
+    <meta property="og:title" content="IMDb Watchlist Analyzer - Visualize Your Movie and Content Watching Experience">
+    <meta property="og:description"
+        content="Analyze your IMDb watchlist data with this interactive dashboard. Upload your CSV export from IMDb to visualize insights on movies, TV series, and other types of content you've watched and rated. No data is sent anywhere; all analysis is done locally in your browser.">
+    <meta property="og:image" content="assets/social-image.png">
+    <meta property="og:url" content="https://romiojoseph.github.io/imdb-watchlist-export-visualizer">
+    <meta property="og:type" content="website">
+
+    <link rel="preconnect" href="https://rsms.me/">
+    <link rel="stylesheet" href="https://rsms.me/inter/inter.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+    <meta name="robots" content="index, follow">
+</head>
+
+<body>
+    <div class="container">
+
+        <div class="top">
+            <div class="heading">
+                <h4 class="title">IMDb Watchlist Analyzer</h4>
+                <p class="description">
+                    Upload your <span id="csv-export-info">CSV export from IMDb</span>
+                    to visualize insights on movies, TV series, and mini-series you've watched and rated. No data is
+                    sent anywhere; all analysis is done locally in your browser.
+                </p>
+            </div>
+            <div class="file-input-container">
+                <input type="file" id="csvFile" accept=".csv" title="Select a CSV file to upload">
+                <label for="csvFile" class="custom-file-label">Select IMDb CSV File</label>
+            </div>
+
+        </div>
+
+        <section class="selection">
+            <span id="fileText" class="file-text">Selected file</span>
+            <span id="fileName" class="file-name"></span>
+        </section>
+
+        <!-- Title Type Cards -->
+        <div id="titleTypeCards" class="cards-container"></div>
+
+        <section class="chart-sections">
+            <!-- Rating Distribution Charts -->
+            <div class="chart-row">
+                <div class="chart-container">
+                    <p class="card-head">Movie watching experience</p>
+                    <p class="info-card">A breakdown of your movie ratings, showing how many films you found Boring
+                        (1-3), Average (4-6), Good (7-9), or Masterpiece (10).</p>
+                    <div id="movieRatingChart"></div>
+                </div>
+                <div class="chart-container">
+                    <p class="card-head">Other content experience</p>
+                    <p class="info-card">Similar rating distribution for TV series, mini-series, and other content
+                        types, helping you compare your experience with different formats.</p>
+                    <div id="otherRatingChart"></div>
+                </div>
+            </div>
+
+            <div class="chart-row">
+                <!-- Year Range Chart -->
+                <div class="chart-container">
+                    <p class="card-head">Era-wise metrics</p>
+                    <p class="info-card">How your ratings are distributed across different time periods, from classic to
+                        modern content, revealing your experiences for different eras.</p>
+                    <div id="yearRangeChart"></div>
+                </div>
+
+                <!-- IMDb Rating Distribution -->
+                <div class="chart-container">
+                    <p class="card-head">You vs IMDb</p>
+                    <p class="info-card">Compare your personal ratings with IMDb's community scores to see how your
+                        taste aligns with or differs from the general audience.</p>
+                    <div id="imdbRatingChart"></div>
+                </div>
+            </div>
+
+
+            <!-- Yearly Watched Chart -->
+            <div class="chart-container">
+                <p class="card-head">Yearly Metrics</p>
+                <p class="info-card">Track your viewing history based on the release year of the content, showing the
+                    total watched and rating breakdowns for each year.</p>
+                <div id="yearlyWatchedChart"></div>
+            </div>
+
+            <!-- Genre Treemap -->
+            <div class="chart-container">
+                <p class="card-head">Genre analysis</p>
+                <p class="info-card">A visual map of your most-watched genres, with larger blocks representing genres
+                    you watch more. Please note that, IMDb assigns multiple genres to a single title
+                    (movie, series, or other content). If a title has multiple genres or sub-genres, each one will be
+                    counted once in all the main genres.</p>
+                <div id="genreTreemap"></div>
+            </div>
+
+            <!-- Genre Stacked Chart -->
+            <div class="chart-container">
+                <p class="card-head">Genre metrics</p>
+                <p class="info-card">Shows how you rate different genres, helping you identify which categories you
+                    consistently enjoy or dislike.</p>
+                <div id="genreStackedChart"></div>
+            </div>
+
+            <div class="chart-row">
+                <!-- Year Range Chart -->
+                <div class="chart-container">
+                    <p class="card-head">Directors Analysis</p>
+                    <p class="info-card">A breakdown of your top 15 most-watched directors, showing your rating
+                        distribution for each director's work.</p>
+                    <div id="directorChart"></div>
+                </div>
+
+                <!-- IMDb Rating Distribution -->
+                <div class="chart-container">
+                    <p class="card-head">Runtime Analysis</p>
+                    <p class="info-card">Distribution of content by runtime duration, categorized into different time
+                        ranges with rating breakdowns.</p>
+                    <div id="runtimeChart"></div>
+                </div>
+            </div>
+        </section>
+
+
+        <footer>
+            <p class="card-label">Better view on desktop</p>
+            <p class="card-head">Disclaimer</p>
+            <p class="info-card">When you visit this website, you'll see dummy data pre-loaded to populate the content
+                and charts. Please note that this dummy data may not match or align with every part of the project. To
+                view the correct data, upload your own exported CSV file.
+
+                I've tested this thoroughly with various test data and verified that all calculations are correct.
+                However, if you notice any inconsistencies, <a href="https://bsky.app/profile/romio.substack.com"
+                    target="_blank" rel="noopener noreferrer">please feel free to let me know</a>.
+            </p>
+            <p class="info-card"> Dedicated to all the movie lovers out there. Discover your
+                unique taste among the countless other viewers and the hidden patterns in your watching experiences.
+                Also if you like, <a href="https://bsky.app/profile/romio.substack.com/feed/MoviesTVShows"
+                    target="_blank" rel="noopener noreferrer">join Movies & TV Shows Bluesky feed.</a>
+            </p>
+
+            <p class="card-head">Transparency notice</p>
+            <p class="info-card">This platform is designed to help you analyze your personal content-watching experience
+                by allowing you to select your exported watchlist csv file. No data is collected, stored, or shared. All
+                selected files are processed and analyzed locally on your device.
+
+                I do not scrape, pull, or use any data directly from IMDb or any other external source. All data
+                displayed on this platform is based solely on the watchlist file you export from IMDb and select for
+                analysis.
+            </p>
+
+            <p class="info-card"> Feel free to check out the source code on <a
+                    href="https://github.com/romiojoseph/imdb-watchlist-export-visualizer" target="_blank"
+                    rel="noopener noreferrer">GitHub</a> for more details. There are no analytics tools
+                or trackers used here, so feel free to browse away with peace of mind.</p>
+
+
+
+            <p class="card-head">Credits</p>
+            <p class="info-card">Javascript created with Mistal AI, Claude and Google AI Studio. Chart library by <a
+                    href="https://apexcharts.com" target="_blank" rel="noopener noreferrer">ApexCharts</a></p>
+            <a href="https://bsky.app/intent/compose?text=https://romiojoseph.github.io/imdb-watchlist-export-visualizer"
+                target="_blank" rel="noopener noreferrer" class="bsky-button">
+                <img src="assets/bluesky.svg" alt="Bluesky Logo" width="16" height="14.27">
+                Share on Bluesky</a>
+        </footer>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="script.js"></script>
+</body>
+
+</html>
